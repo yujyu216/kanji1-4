@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0066BB">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="かんじドリル">
+<title>さめ先生のかんじドリル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=BIZ+UDPMincho:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'BIZ UDPGothic','UD Digi Kyokasho NK-R','Hiragino Maru Gothic Pro','Yu Gothic UI',sans-serif;background:#0055AA;-webkit-text-size-adjust:100%}
+:root{
+  --blue:#0066BB;--blue-dk:#004A99;--sky:#E8F6FF;--off:#F2F8FF;
+  --coral:#FF5C4D;--coral-lt:#FF8878;
+  --gold:#FFD000;--gold-dk:#C9A000;
+  --mint:#22CC88;--mint-dk:#179960;
+  --dark:#1A2E4A;--gray:#607890;--white:#fff;
+  --fk:'BIZ UDPMincho','UD Digi Kyokasho NK-R','Hiragino Mincho ProN','Yu Mincho',serif;
+  --fm:'BIZ UDPGothic','UD Digi Kyokasho NK-R','Hiragino Maru Gothic Pro','Yu Gothic UI',sans-serif;
+  --st:env(safe-area-inset-top,0px);
+  --sb:env(safe-area-inset-bottom,0px);
+}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;opacity:0;transform:translateX(28px);pointer-events:none;transition:opacity .32s ease,transform .32s ease;padding-top:var(--st)}
+.screen.active{opacity:1;transform:translateX(0);pointer-events:all}
+.screen.exit{opacity:0;transform:translateX(-28px)}
+
+/* HOME */
+#s-home{background:linear-gradient(160deg,#0077CC 0%,#00AAEE 55%,#55DDFF 100%)}
+.hbg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.bub{position:absolute;border-radius:50%;background:rgba(255,255,255,.13);animation:fb 5s ease-in-out infinite}
+.b1{width:72px;height:72px;left:7%;bottom:15%;animation-delay:0s}
+.b2{width:44px;height:44px;left:76%;bottom:28%;animation-delay:1.8s}
+.b3{width:104px;height:104px;left:83%;bottom:50%;animation-delay:3.2s}
+.b4{width:36px;height:36px;left:24%;bottom:60%;animation-delay:4.5s}
+@keyframes fb{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-15px) scale(1.06)}}
+.h-inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;height:100%;padding:0 18px calc(18px + var(--sb));overflow-y:auto}
+.h-head{display:flex;align-items:center;gap:14px;padding:clamp(18px,5.5vw,42px) 0 12px;width:100%;max-width:420px}
+.shark-big{font-size:clamp(58px,16vw,80px);line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,.25));animation:sbob 3s ease-in-out infinite;flex-shrink:0}
+@keyframes sbob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+.h-titles .h-sub{font-size:clamp(14px,4vw,18px);font-weight:700;color:rgba(255,255,255,.9)}
+.h-titles .h-main{font-size:clamp(23px,6.5vw,30px);font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.2);line-height:1.2}
+.sph{background:#fff;border-radius:26px;padding:13px 22px;font-size:clamp(14px,4.2vw,17px);font-weight:700;color:#004A99;text-align:center;box-shadow:0 4px 18px rgba(0,80,160,.18);width:100%;max-width:420px;margin-bottom:14px;line-height:1.7;position:relative}
+.sph::before{content:'';position:absolute;top:-11px;left:52px;border:11px solid transparent;border-bottom-color:#fff;border-top:none}
+
+/* MODE SELECTOR */
+.mode-lbl{font-size:clamp(15px,4.5vw,19px);font-weight:700;color:rgba(255,255,255,.9);margin-bottom:8px;align-self:flex-start;width:100%;max-width:420px}
+.mode-toggle{display:flex;gap:8px;width:100%;max-width:420px;margin-bottom:14px;background:rgba(0,0,0,.2);border-radius:16px;padding:5px}
+.mode-btn{flex:1;border:none;border-radius:12px;padding:10px 8px;font-family:var(--fm);font-size:clamp(13px,3.8vw,16px);font-weight:700;cursor:pointer;transition:all .2s;background:transparent;color:rgba(255,255,255,.75)}
+.mode-btn.active{background:#fff;color:#004A99;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+
+.g-lbl{font-size:clamp(15px,4.5vw,19px);font-weight:700;color:rgba(255,255,255,.9);margin-bottom:10px;align-self:flex-start;width:100%;max-width:420px}
+.g-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;width:100%;max-width:420px;margin-bottom:14px}
+.gbtn{background:#fff;border:none;border-radius:18px;padding:clamp(14px,4.5vw,22px) 12px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.16);transition:transform .1s,box-shadow .1s;position:relative;overflow:hidden}
+.gbtn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.55),transparent 55%)}
+.gbtn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.16)}
+.gbtn[data-g="1"]{background:linear-gradient(135deg,#FFE84D,#FFD000)}
+.gbtn[data-g="2"]{background:linear-gradient(135deg,#72F0A8,#22CC88)}
+.gbtn[data-g="3"]{background:linear-gradient(135deg,#7DD8FF,#0088DD)}
+.gbtn[data-g="4"]{background:linear-gradient(135deg,#FFAA96,#FF5C4D)}
+.g-num{font-family:var(--fk);font-size:clamp(40px,12vw,58px);font-weight:700;color:#1A2E4A;line-height:1}
+.g-txt{font-size:clamp(12px,3.5vw,15px);font-weight:700;color:#1A2E4A}
+.stats-bar{background:rgba(255,255,255,.2);backdrop-filter:blur(8px);border-radius:18px;padding:13px 16px;width:100%;max-width:420px;display:flex;justify-content:space-around}
+.st-it{display:flex;flex-direction:column;align-items:center;gap:3px}
+.st-ic{font-size:18px}
+.st-lb{font-size:10px;font-weight:700;color:rgba(255,255,255,.85);text-align:center;line-height:1.4}
+.st-vl{font-size:clamp(18px,5vw,24px);font-weight:900;color:#fff}
+
+/* TOP BAR */
+.tbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#004A99;flex-shrink:0}
+.bkbtn{background:rgba(255,255,255,.22);border:none;border-radius:10px;padding:9px 14px;font-family:var(--fm);font-size:clamp(13px,3.8vw,15px);font-weight:700;color:#fff;cursor:pointer;white-space:nowrap}
+.bkbtn:active{background:rgba(255,255,255,.38)}
+.step-dots{display:flex;gap:7px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.3);transition:background .3s,transform .3s}
+.dot.on{background:#FFD000;transform:scale(1.3)}
+.step-lbl{flex:1;text-align:center;font-size:13px;font-weight:700;color:rgba(255,255,255,.8)}
+.shark-sm{font-size:clamp(28px,8vw,36px);flex-shrink:0;animation:sbob 3s ease-in-out infinite}
+
+/* LESSON SCREENS */
+.lesson-screen{background:var(--sky)}
+.shark-row{display:flex;align-items:flex-end;gap:10px;padding:10px 16px 0;flex-shrink:0}
+.shark-mid{font-size:clamp(44px,13vw,62px);flex-shrink:0;animation:sbob 2.5s ease-in-out infinite}
+.bubble-msg{background:#fff;border-radius:20px 20px 20px 4px;padding:11px 18px;font-size:clamp(14px,4.2vw,17px);font-weight:700;color:#004A99;line-height:1.6;box-shadow:0 3px 14px rgba(0,80,160,.15);flex:1;min-width:0}
+
+/* WORD / KANJI display - Step 1 hero */
+.kanji-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:4px 20px;min-height:0}
+.word-display{font-family:var(--fk);font-size:clamp(56px,16vw,100px);font-weight:700;color:var(--dark);line-height:1.1;text-align:center;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.word-display.pop{transform:scale(1.09)}
+.k-emoji-big{font-size:clamp(50px,14vw,80px);line-height:1;animation:ep 2.2s ease-in-out infinite}
+@keyframes ep{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
+.mode-tag{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--gold-dk));border-radius:999px;padding:4px 16px;font-size:clamp(12px,3.5vw,14px);font-weight:700;color:var(--dark);margin-bottom:2px}
+
+/* speak button */
+.spk-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#0077CC,#004A99);border:none;border-radius:999px;padding:clamp(13px,4vw,17px) clamp(26px,7vw,40px);font-family:var(--fm);font-size:clamp(17px,5vw,22px);font-weight:900;color:#fff;cursor:pointer;box-shadow:0 6px 0 #002A70;margin:0 18px;flex-shrink:0;transition:transform .1s,box-shadow .1s}
+.spk-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #002A70}
+.spk-btn.speaking{background:linear-gradient(135deg,var(--mint),var(--mint-dk));box-shadow:0 6px 0 #0D5C38;animation:pglow .5s ease-in-out infinite alternate}
+@keyframes pglow{from{box-shadow:0 6px 0 #0D5C38}to{box-shadow:0 6px 0 #0D5C38,0 0 18px rgba(34,204,136,.5)}}
+.spk-ic{font-size:clamp(22px,6vw,28px)}
+.reading-show{text-align:center;font-size:clamp(22px,6.5vw,30px);font-weight:900;color:var(--blue);letter-spacing:.12em;min-height:38px;padding:4px 18px;flex-shrink:0}
+
+/* next button */
+.next-btn{margin:6px 18px calc(10px + var(--sb));background:linear-gradient(135deg,var(--gold),var(--gold-dk));border:none;border-radius:18px;padding:clamp(14px,4.5vw,18px);font-family:var(--fm);font-size:clamp(17px,5vw,21px);font-weight:900;color:var(--dark);cursor:pointer;box-shadow:0 6px 0 #8A6000;flex-shrink:0;transition:transform .1s,box-shadow .1s;display:flex;align-items:center;justify-content:center;gap:8px}
+.next-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #8A6000}
+
+/* STEP 2 & 3 */
+#s-step2{background:var(--sky)}
+#s-step3{background:var(--off)}
+.step2-top{display:flex;flex-direction:column;align-items:center;padding:6px 18px 2px;flex-shrink:0;gap:4px}
+.word-sm{font-family:var(--fk);font-size:clamp(40px,12vw,72px);font-weight:700;color:var(--dark);line-height:1.1;text-align:center}
+.emoji-sm{font-size:clamp(28px,8vw,44px);line-height:1}
+.spk-sm{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#0077CC,#004A99);border:none;border-radius:999px;padding:9px 22px;font-family:var(--fm);font-size:clamp(14px,4vw,17px);font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 0 #002A70;margin:2px 0 0;transition:transform .1s,box-shadow .1s}
+.spk-sm:active{transform:translateY(3px);box-shadow:0 1px 0 #002A70}
+.spk-sm.speaking{background:linear-gradient(135deg,var(--mint),var(--mint-dk));box-shadow:0 4px 0 #0D5C38}
+
+/* Step2 grid: 6-word/kanji tiles */
+.quiz-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 16px;gap:10px;min-height:0}
+.word-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;width:100%;max-width:400px}
+.wgrid-btn{background:#fff;border:3px solid #C4E4FF;border-radius:14px;padding:clamp(10px,3vw,15px) 6px;font-family:var(--fk);font-size:clamp(16px,5vw,24px);font-weight:700;color:var(--dark);cursor:pointer;text-align:center;box-shadow:0 4px 0 rgba(0,80,160,.12);transition:transform .12s,box-shadow .12s;line-height:1.3;min-height:clamp(52px,14vw,72px);display:flex;align-items:center;justify-content:center}
+.wgrid-btn:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 rgba(0,80,160,.12)}
+.wgrid-btn.correct{background:linear-gradient(135deg,#C8FAE8,#90EFCC);border-color:var(--mint);animation:cbnc .5s cubic-bezier(.34,1.56,.64,1)}
+.wgrid-btn.wrong{background:linear-gradient(135deg,#FFE0DC,#FFC0B4);border-color:var(--coral);animation:cshk .38s ease}
+.wgrid-btn.dim{opacity:.3}
+@keyframes cbnc{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes cshk{0%,100%{transform:translateX(0)}30%{transform:translateX(-7px)}70%{transform:translateX(7px)}}
+
+/* Step3: 4-choice kanji (from reading) */
+.hira-reading{font-size:clamp(28px,8.5vw,44px);font-weight:900;color:var(--dark);letter-spacing:.12em;text-align:center;padding:2px 0}
+.hira-label{font-size:clamp(15px,4.5vw,18px);font-weight:700;color:var(--gray);text-align:center}
+.word-choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:400px}
+.wc-btn{background:#fff;border:3px solid #C4E4FF;border-radius:16px;padding:clamp(14px,4.5vw,20px) 6px;font-family:var(--fk);font-size:clamp(22px,7vw,38px);font-weight:700;color:var(--dark);cursor:pointer;text-align:center;box-shadow:0 4px 0 rgba(0,80,160,.12);transition:transform .12s,box-shadow .12s;line-height:1.3;min-height:clamp(70px,18vw,100px);display:flex;align-items:center;justify-content:center}
+.wc-btn:active:not(:disabled){transform:translateY(2px)}
+.wc-btn.correct{background:linear-gradient(135deg,#C8FAE8,#90EFCC);border-color:var(--mint);animation:cbnc .5s cubic-bezier(.34,1.56,.64,1)}
+.wc-btn.wrong{background:linear-gradient(135deg,#FFE0DC,#FFC0B4);border-color:var(--coral);animation:cshk .38s ease}
+
+/* FEEDBACK */
+.fb-ov{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
+.fb-box{background:#fff;border-radius:36px;padding:clamp(22px,7vw,36px) clamp(26px,8vw,44px);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.28);animation:pin .4s cubic-bezier(.34,1.56,.64,1);max-width:300px;width:88%}
+@keyframes pin{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
+.fb-shk{font-size:clamp(52px,15vw,68px);display:block;animation:sbob 1s ease-in-out infinite}
+.fb-ej{font-size:clamp(44px,13vw,58px);display:block;margin:5px 0}
+.fb-msg{font-size:clamp(22px,6.5vw,30px);font-weight:900;margin:5px 0 2px}
+.fb-msg.ok{color:var(--mint-dk)}.fb-msg.ng{color:var(--coral)}
+.fb-rd{font-size:clamp(15px,4.8vw,20px);font-weight:700;color:var(--blue);letter-spacing:.08em;line-height:1.5}
+
+/* RESULT */
+#s-result{background:linear-gradient(160deg,#004A99,#0099CC)}
+.res-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.cft{position:absolute;inset:0}
+.cp{position:absolute;top:-20px;border-radius:4px;animation:cfl linear forwards}
+@keyframes cfl{from{transform:translateY(0) rotate(0deg);opacity:1}to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.r-inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px 22px calc(22px + var(--sb));gap:10px;overflow-y:auto}
+.r-shk{font-size:clamp(60px,18vw,84px);animation:sbob 2s ease-in-out infinite}
+.r-title{font-size:clamp(22px,6.5vw,30px);font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.2)}
+.sc-box{background:#fff;border-radius:999px;padding:clamp(14px,5vw,20px) clamp(30px,9vw,48px);display:flex;align-items:baseline;gap:8px;box-shadow:0 8px 28px rgba(0,0,0,.2)}
+.sc-n{font-family:var(--fk);font-size:clamp(58px,18vw,78px);font-weight:700;color:#004A99;line-height:1}
+.sc-of{font-size:clamp(16px,4.5vw,20px);font-weight:700;color:var(--gray)}
+.r-rate{font-size:clamp(16px,4.8vw,20px);font-weight:700;color:#fff;background:rgba(255,255,255,.2);border-radius:999px;padding:7px 22px}
+.r-msg{font-size:clamp(18px,5.5vw,24px);font-weight:900;color:var(--gold);text-shadow:0 2px 6px rgba(0,0,0,.25);text-align:center}
+.r-btns{display:flex;gap:10px;width:100%;max-width:360px}
+.r-btn{flex:1;border:none;border-radius:16px;padding:clamp(15px,4.5vw,19px);font-family:var(--fm);font-size:clamp(15px,4.5vw,19px);font-weight:700;cursor:pointer;transition:transform .1s,box-shadow .1s}
+.r-btn-p{background:linear-gradient(135deg,var(--gold),var(--gold-dk));color:var(--dark);box-shadow:0 6px 0 #8A6000}
+.r-btn-s{background:rgba(255,255,255,.22);color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+.r-btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.wrong-wrap{width:100%;max-width:380px}
+.wrong-lbl{font-size:14px;font-weight:700;color:rgba(255,255,255,.8);text-align:center;margin-bottom:8px}
+.wrong-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.w-tag{background:rgba(255,255,255,.18);border-radius:12px;padding:7px 14px;font-family:var(--fk);font-size:clamp(18px,5.5vw,24px);font-weight:700;color:#fff;text-align:center;line-height:1.4}
+.w-tag small{display:block;font-family:var(--fm);font-size:11px;font-weight:700;opacity:.85}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,85,170,.3);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="s-home" class="screen active">
+  <div class="hbg"><div class="bub b1"></div><div class="bub b2"></div><div class="bub b3"></div><div class="bub b4"></div></div>
+  <div class="h-inner">
+    <div class="h-head">
+      <div class="shark-big">🦈</div>
+      <div class="h-titles"><div class="h-sub">さめ先生の</div><div class="h-main">かんじドリル</div></div>
+    </div>
+    <div class="sph" id="h-msg">いっしょに　たのしく　まなぼう！</div>
+
+    <div class="mode-lbl">モードをえらんでね</div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="btn-kanji" onclick="setMode('kanji')">🔤 かんじ</button>
+      <button class="mode-btn" id="btn-word" onclick="setMode('word')">📖 たんご</button>
+    </div>
+
+    <div class="g-lbl">なんねんせい？</div>
+    <div class="g-grid">
+      <button class="gbtn" data-g="1" onclick="selG(1)"><span class="g-num">1</span><span class="g-txt">ねんせい</span></button>
+      <button class="gbtn" data-g="2" onclick="selG(2)"><span class="g-num">2</span><span class="g-txt">ねんせい</span></button>
+      <button class="gbtn" data-g="3" onclick="selG(3)"><span class="g-num">3</span><span class="g-txt">ねんせい</span></button>
+      <button class="gbtn" data-g="4" onclick="selG(4)"><span class="g-num">4</span><span class="g-txt">ねんせい</span></button>
+    </div>
+    <div class="stats-bar">
+      <div class="st-it"><span class="st-ic">⭐</span><span class="st-lb">きょうの<br>せいかい</span><span class="st-vl" id="st-ok">0</span></div>
+      <div class="st-it"><span class="st-ic">📊</span><span class="st-lb">せいとう<br>りつ</span><span class="st-vl" id="st-rt">－</span></div>
+      <div class="st-it"><span class="st-ic">❤️</span><span class="st-lb">にがて<br>もの</span><span class="st-vl" id="st-wr">0</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div id="s-step1" class="screen lesson-screen">
+  <div class="tbar">
+    <button class="bkbtn" onclick="goHome()">◀ もどる</button>
+    <div class="step-dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
+    <div class="step-lbl">STEP 1</div>
+    <div class="shark-sm">🦈</div>
+  </div>
+  <div class="shark-row">
+    <div class="shark-mid">🦈</div>
+    <div class="bubble-msg" id="s1-msg">よみあげボタンを　おしてみよう！</div>
+  </div>
+  <div class="kanji-hero">
+    <div class="mode-tag" id="s1-tag">かんじ</div>
+    <div class="word-display" id="s1-word">花</div>
+    <div class="k-emoji-big" id="s1-emoji">🌸</div>
+  </div>
+  <button class="spk-btn" id="s1-spkbtn" onclick="step1Speak()">
+    <span class="spk-ic">🔊</span><span>よみあげる</span>
+  </button>
+  <div class="reading-show" id="s1-reading"></div>
+  <button class="next-btn" onclick="goStep2()">つぎへ ▶</button>
+</div>
+
+<!-- STEP 2 -->
+<div id="s-step2" class="screen lesson-screen">
+  <div class="tbar">
+    <button class="bkbtn" onclick="goStep1()">◀ もどる</button>
+    <div class="step-dots"><div class="dot"></div><div class="dot on"></div><div class="dot"></div></div>
+    <div class="step-lbl">STEP 2</div>
+    <div class="shark-sm">🦈</div>
+  </div>
+  <div class="shark-row">
+    <div class="shark-mid">🦈</div>
+    <div class="bubble-msg" id="s2-msg">おなじものを　みつけて　タップ！</div>
+  </div>
+  <div class="step2-top">
+    <div class="word-sm" id="s2-word">花</div>
+    <div class="emoji-sm" id="s2-emoji">🌸</div>
+    <button class="spk-sm" id="s2-spkbtn" onclick="step2Speak()"><span style="font-size:18px">🔊</span><span>よみあげる</span></button>
+  </div>
+  <div class="quiz-area">
+    <div class="word-grid" id="s2-grid"></div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div id="s-step3" class="screen lesson-screen">
+  <div class="tbar">
+    <button class="bkbtn" onclick="goStep2()">◀ もどる</button>
+    <div class="step-dots"><div class="dot"></div><div class="dot"></div><div class="dot on"></div></div>
+    <div class="step-lbl">STEP 3</div>
+    <div class="shark-sm">🦈</div>
+  </div>
+  <div class="shark-row">
+    <div class="shark-mid">🦈</div>
+    <div class="bubble-msg" id="s3-msg">ひらがなに　あうものを　えらんでね！</div>
+  </div>
+  <div class="step2-top">
+    <div class="emoji-sm" id="s3-emoji">🌸</div>
+    <button class="spk-sm" id="s3-spkbtn" onclick="step3Speak()"><span style="font-size:18px">🔊</span><span>よみあげる</span></button>
+    <div class="hira-reading" id="s3-reading">はな</div>
+    <div class="hira-label">に　あうのは　どれ？</div>
+  </div>
+  <div class="quiz-area">
+    <div class="word-choices" id="s3-grid"></div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="s-result" class="screen">
+  <div class="res-bg"><div class="cft" id="cft"></div></div>
+  <div class="r-inner">
+    <div class="r-shk">🦈</div>
+    <div class="r-title" id="r-title">おわったよ！</div>
+    <div class="sc-box"><div class="sc-n" id="r-score">8</div><div class="sc-of" id="r-of">/ 10もん</div></div>
+    <div class="r-rate" id="r-rate">せいとうりつ　80%</div>
+    <div class="r-msg" id="r-msg">よくできました！🎉</div>
+    <div class="r-btns">
+      <button class="r-btn r-btn-p" onclick="again()">もういちど！</button>
+      <button class="r-btn r-btn-s" onclick="goHome()">ホームへ</button>
+    </div>
+    <div class="wrong-wrap" id="ww" style="display:none">
+      <div class="wrong-lbl">まちがえたもの：</div>
+      <div class="wrong-list" id="wl"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FEEDBACK -->
+<div id="fb" class="fb-ov" style="display:none">
+  <div class="fb-box">
+    <span class="fb-shk">🦈</span>
+    <span class="fb-ej" id="fb-ej">🎉</span>
+    <div class="fb-msg" id="fb-msg">せいかい！</div>
+    <div class="fb-rd" id="fb-rd"></div>
+  </div>
+</div>
+
+<script>
+const KD={"1": [{"grade": 1, "kanji": "一", "read": "いち", "emoji": "1️⃣"}, {"grade": 1, "kanji": "右", "read": "みぎ", "emoji": "➡️"}, {"grade": 1, "kanji": "雨", "read": "あめ", "emoji": "🌧️"}, {"grade": 1, "kanji": "円", "read": "えん", "emoji": "🪙"}, {"grade": 1, "kanji": "王", "read": "おう", "emoji": "👑"}, {"grade": 1, "kanji": "音", "read": "おと", "emoji": "🎵"}, {"grade": 1, "kanji": "下", "read": "した", "emoji": "⬇️"}, {"grade": 1, "kanji": "火", "read": "ひ", "emoji": "🔥"}, {"grade": 1, "kanji": "花", "read": "はな", "emoji": "🌸"}, {"grade": 1, "kanji": "貝", "read": "かい", "emoji": "🐚"}, {"grade": 1, "kanji": "学", "read": "まなぶ", "emoji": "✏️"}, {"grade": 1, "kanji": "気", "read": "き", "emoji": "⚡"}, {"grade": 1, "kanji": "九", "read": "きゅう", "emoji": "9️⃣"}, {"grade": 1, "kanji": "休", "read": "やすむ", "emoji": "🛌"}, {"grade": 1, "kanji": "玉", "read": "たま", "emoji": "🔮"}, {"grade": 1, "kanji": "金", "read": "かね", "emoji": "💰"}, {"grade": 1, "kanji": "空", "read": "そら", "emoji": "🌤️"}, {"grade": 1, "kanji": "月", "read": "つき", "emoji": "🌙"}, {"grade": 1, "kanji": "犬", "read": "いぬ", "emoji": "🐶"}, {"grade": 1, "kanji": "見", "read": "みる", "emoji": "👀"}, {"grade": 1, "kanji": "五", "read": "ご", "emoji": "5️⃣"}, {"grade": 1, "kanji": "口", "read": "くち", "emoji": "👄"}, {"grade": 1, "kanji": "校", "read": "こう", "emoji": "🏫"}, {"grade": 1, "kanji": "左", "read": "ひだり", "emoji": "⬅️"}, {"grade": 1, "kanji": "三", "read": "さん", "emoji": "3️⃣"}, {"grade": 1, "kanji": "山", "read": "やま", "emoji": "⛰️"}, {"grade": 1, "kanji": "子", "read": "こ", "emoji": "👶"}, {"grade": 1, "kanji": "四", "read": "よん", "emoji": "4️⃣"}, {"grade": 1, "kanji": "糸", "read": "いと", "emoji": "🧵"}, {"grade": 1, "kanji": "字", "read": "じ", "emoji": "🔤"}, {"grade": 1, "kanji": "耳", "read": "みみ", "emoji": "👂"}, {"grade": 1, "kanji": "七", "read": "なな", "emoji": "7️⃣"}, {"grade": 1, "kanji": "車", "read": "くるま", "emoji": "🚗"}, {"grade": 1, "kanji": "手", "read": "て", "emoji": "✋"}, {"grade": 1, "kanji": "十", "read": "じゅう", "emoji": "🔟"}, {"grade": 1, "kanji": "出", "read": "でる", "emoji": "🚪"}, {"grade": 1, "kanji": "女", "read": "おんな", "emoji": "👩"}, {"grade": 1, "kanji": "小", "read": "ちいさい", "emoji": "🐭"}, {"grade": 1, "kanji": "上", "read": "うえ", "emoji": "⬆️"}, {"grade": 1, "kanji": "森", "read": "もり", "emoji": "🌲"}, {"grade": 1, "kanji": "人", "read": "ひと", "emoji": "👤"}, {"grade": 1, "kanji": "水", "read": "みず", "emoji": "💧"}, {"grade": 1, "kanji": "正", "read": "ただしい", "emoji": "✅"}, {"grade": 1, "kanji": "生", "read": "いきる", "emoji": "🌱"}, {"grade": 1, "kanji": "青", "read": "あお", "emoji": "🔵"}, {"grade": 1, "kanji": "夕", "read": "ゆう", "emoji": "🌆"}, {"grade": 1, "kanji": "石", "read": "いし", "emoji": "🪨"}, {"grade": 1, "kanji": "赤", "read": "あか", "emoji": "🔴"}, {"grade": 1, "kanji": "千", "read": "せん", "emoji": "🔢"}, {"grade": 1, "kanji": "川", "read": "かわ", "emoji": "🏞️"}, {"grade": 1, "kanji": "先", "read": "さき", "emoji": "🏃"}, {"grade": 1, "kanji": "早", "read": "はやい", "emoji": "⏰"}, {"grade": 1, "kanji": "草", "read": "くさ", "emoji": "🌱"}, {"grade": 1, "kanji": "足", "read": "あし", "emoji": "🦶"}, {"grade": 1, "kanji": "村", "read": "むら", "emoji": "🏡"}, {"grade": 1, "kanji": "大", "read": "おおきい", "emoji": "🐘"}, {"grade": 1, "kanji": "男", "read": "おとこ", "emoji": "👨"}, {"grade": 1, "kanji": "竹", "read": "たけ", "emoji": "🎋"}, {"grade": 1, "kanji": "中", "read": "なか", "emoji": "🎯"}, {"grade": 1, "kanji": "虫", "read": "むし", "emoji": "🐛"}, {"grade": 1, "kanji": "町", "read": "まち", "emoji": "🏘️"}, {"grade": 1, "kanji": "天", "read": "てん", "emoji": "🌌"}, {"grade": 1, "kanji": "田", "read": "た", "emoji": "🌾"}, {"grade": 1, "kanji": "土", "read": "つち", "emoji": "🟫"}, {"grade": 1, "kanji": "二", "read": "に", "emoji": "2️⃣"}, {"grade": 1, "kanji": "日", "read": "ひ", "emoji": "☀️"}, {"grade": 1, "kanji": "入", "read": "はいる", "emoji": "📥"}, {"grade": 1, "kanji": "年", "read": "とし", "emoji": "📅"}, {"grade": 1, "kanji": "白", "read": "しろ", "emoji": "⚪"}, {"grade": 1, "kanji": "八", "read": "はち", "emoji": "8️⃣"}, {"grade": 1, "kanji": "百", "read": "ひゃく", "emoji": "💯"}, {"grade": 1, "kanji": "文", "read": "ぶん", "emoji": "📝"}, {"grade": 1, "kanji": "木", "read": "き", "emoji": "🌳"}, {"grade": 1, "kanji": "本", "read": "ほん", "emoji": "📖"}, {"grade": 1, "kanji": "名", "read": "なまえ", "emoji": "🏷️"}, {"grade": 1, "kanji": "目", "read": "め", "emoji": "👁️"}, {"grade": 1, "kanji": "立", "read": "たつ", "emoji": "🧍"}, {"grade": 1, "kanji": "力", "read": "ちから", "emoji": "💪"}, {"grade": 1, "kanji": "林", "read": "はやし", "emoji": "🌳🌳"}, {"grade": 1, "kanji": "六", "read": "ろく", "emoji": "6️⃣"}], "2": [{"grade": 2, "kanji": "引", "read": "ひく", "emoji": "↩️"}, {"grade": 2, "kanji": "羽", "read": "はね", "emoji": "🪶"}, {"grade": 2, "kanji": "雲", "read": "くも", "emoji": "☁️"}, {"grade": 2, "kanji": "園", "read": "その", "emoji": "🏡"}, {"grade": 2, "kanji": "遠", "read": "とおい", "emoji": "🔭"}, {"grade": 2, "kanji": "何", "read": "なに", "emoji": "❓"}, {"grade": 2, "kanji": "科", "read": "か", "emoji": "🔬"}, {"grade": 2, "kanji": "夏", "read": "なつ", "emoji": "☀️"}, {"grade": 2, "kanji": "家", "read": "いえ", "emoji": "🏠"}, {"grade": 2, "kanji": "歌", "read": "うた", "emoji": "🎤"}, {"grade": 2, "kanji": "画", "read": "が", "emoji": "🖼️"}, {"grade": 2, "kanji": "回", "read": "かい", "emoji": "🔄"}, {"grade": 2, "kanji": "会", "read": "あう", "emoji": "🤝"}, {"grade": 2, "kanji": "海", "read": "うみ", "emoji": "🌊"}, {"grade": 2, "kanji": "絵", "read": "え", "emoji": "🎨"}, {"grade": 2, "kanji": "外", "read": "そと", "emoji": "🏞️"}, {"grade": 2, "kanji": "角", "read": "かど", "emoji": "📐"}, {"grade": 2, "kanji": "楽", "read": "たのしい", "emoji": "🎉"}, {"grade": 2, "kanji": "活", "read": "かつ", "emoji": "⚡"}, {"grade": 2, "kanji": "間", "read": "あいだ", "emoji": "↔️"}, {"grade": 2, "kanji": "丸", "read": "まる", "emoji": "⭕"}, {"grade": 2, "kanji": "岩", "read": "いわ", "emoji": "🪨"}, {"grade": 2, "kanji": "顔", "read": "かお", "emoji": "😀"}, {"grade": 2, "kanji": "汽", "read": "き", "emoji": "🚂"}, {"grade": 2, "kanji": "記", "read": "き", "emoji": "✍️"}, {"grade": 2, "kanji": "帰", "read": "かえる", "emoji": "🏡"}, {"grade": 2, "kanji": "弓", "read": "ゆみ", "emoji": "🏹"}, {"grade": 2, "kanji": "牛", "read": "うし", "emoji": "🐂"}, {"grade": 2, "kanji": "魚", "read": "さかな", "emoji": "🐟"}, {"grade": 2, "kanji": "京", "read": "きょう", "emoji": "⛩️"}, {"grade": 2, "kanji": "強", "read": "つよい", "emoji": "🦁"}, {"grade": 2, "kanji": "教", "read": "おしえる", "emoji": "🧑‍🏫"}, {"grade": 2, "kanji": "近", "read": "ちかい", "emoji": "📍"}, {"grade": 2, "kanji": "兄", "read": "あに", "emoji": "🧑"}, {"grade": 2, "kanji": "形", "read": "かたち", "emoji": "📐"}, {"grade": 2, "kanji": "計", "read": "けい", "emoji": "📏"}, {"grade": 2, "kanji": "元", "read": "げんき", "emoji": "💪"}, {"grade": 2, "kanji": "言", "read": "いう", "emoji": "🗣️"}, {"grade": 2, "kanji": "原", "read": "はら", "emoji": "🌾"}, {"grade": 2, "kanji": "戸", "read": "と", "emoji": "🚪"}, {"grade": 2, "kanji": "古", "read": "ふるい", "emoji": "🏺"}, {"grade": 2, "kanji": "午", "read": "ご", "emoji": "🕛"}, {"grade": 2, "kanji": "後", "read": "あと", "emoji": "⏩"}, {"grade": 2, "kanji": "語", "read": "ことば", "emoji": "💬"}, {"grade": 2, "kanji": "工", "read": "こう", "emoji": "🛠️"}, {"grade": 2, "kanji": "公", "read": "おおやけ", "emoji": "🏛️"}, {"grade": 2, "kanji": "広", "read": "ひろい", "emoji": "🗺️"}, {"grade": 2, "kanji": "交", "read": "かわす", "emoji": "🔀"}, {"grade": 2, "kanji": "光", "read": "ひかり", "emoji": "✨"}, {"grade": 2, "kanji": "考", "read": "かんがえる", "emoji": "🤔"}, {"grade": 2, "kanji": "行", "read": "いく", "emoji": "🚶"}, {"grade": 2, "kanji": "高", "read": "たかい", "emoji": "🗼"}, {"grade": 2, "kanji": "黄", "read": "きいろ", "emoji": "🟡"}, {"grade": 2, "kanji": "合", "read": "あう", "emoji": "🤝"}, {"grade": 2, "kanji": "谷", "read": "たに", "emoji": "🏔️"}, {"grade": 2, "kanji": "国", "read": "くに", "emoji": "🗾"}, {"grade": 2, "kanji": "黒", "read": "くろ", "emoji": "⚫"}, {"grade": 2, "kanji": "今", "read": "いま", "emoji": "⏰"}, {"grade": 2, "kanji": "才", "read": "さい", "emoji": "🎂"}, {"grade": 2, "kanji": "細", "read": "ほそい", "emoji": "🧵"}, {"grade": 2, "kanji": "作", "read": "つくる", "emoji": "🔨"}, {"grade": 2, "kanji": "算", "read": "さん", "emoji": "🧮"}, {"grade": 2, "kanji": "止", "read": "とまる", "emoji": "🛑"}, {"grade": 2, "kanji": "市", "read": "し", "emoji": "🏙️"}, {"grade": 2, "kanji": "矢", "read": "や", "emoji": "🏹"}, {"grade": 2, "kanji": "姉", "read": "あね", "emoji": "👩"}, {"grade": 2, "kanji": "思", "read": "おもう", "emoji": "💭"}, {"grade": 2, "kanji": "紙", "read": "かみ", "emoji": "📄"}, {"grade": 2, "kanji": "寺", "read": "てら", "emoji": "⛩️"}, {"grade": 2, "kanji": "自", "read": "じ", "emoji": "👤"}, {"grade": 2, "kanji": "時", "read": "とき", "emoji": "🕒"}, {"grade": 2, "kanji": "室", "read": "しつ", "emoji": "🚪"}, {"grade": 2, "kanji": "社", "read": "しゃ", "emoji": "🏢"}, {"grade": 2, "kanji": "弱", "read": "よわい", "emoji": "🐣"}, {"grade": 2, "kanji": "首", "read": "くび", "emoji": "🧣"}, {"grade": 2, "kanji": "秋", "read": "あき", "emoji": "🍁"}, {"grade": 2, "kanji": "週", "read": "しゅう", "emoji": "📅"}, {"grade": 2, "kanji": "春", "read": "はる", "emoji": "🌸"}, {"grade": 2, "kanji": "書", "read": "かく", "emoji": "✍️"}, {"grade": 2, "kanji": "少", "read": "すくない", "emoji": "🤏"}, {"grade": 2, "kanji": "場", "read": "ばしょ", "emoji": "📍"}, {"grade": 2, "kanji": "色", "read": "いろ", "emoji": "🎨"}, {"grade": 2, "kanji": "食", "read": "たべる", "emoji": "🍔"}, {"grade": 2, "kanji": "心", "read": "こころ", "emoji": "❤️"}, {"grade": 2, "kanji": "新", "read": "あたらしい", "emoji": "🆕"}, {"grade": 2, "kanji": "親", "read": "おや", "emoji": "👪"}, {"grade": 2, "kanji": "図", "read": "ず", "emoji": "📊"}, {"grade": 2, "kanji": "数", "read": "かず", "emoji": "🔢"}, {"grade": 2, "kanji": "西", "read": "にし", "emoji": "🧭"}, {"grade": 2, "kanji": "声", "read": "こえ", "emoji": "🗣️"}, {"grade": 2, "kanji": "星", "read": "ほし", "emoji": "⭐"}, {"grade": 2, "kanji": "晴", "read": "はれ", "emoji": "☀️"}, {"grade": 2, "kanji": "雪", "read": "ゆき", "emoji": "❄️"}, {"grade": 2, "kanji": "船", "read": "ふね", "emoji": "🚢"}, {"grade": 2, "kanji": "線", "read": "せん", "emoji": "➖"}, {"grade": 2, "kanji": "前", "read": "まえ", "emoji": "⏩"}, {"grade": 2, "kanji": "組", "read": "くみ", "emoji": "👥"}, {"grade": 2, "kanji": "走", "read": "はしる", "emoji": "🏃"}, {"grade": 2, "kanji": "多", "read": "おおい", "emoji": "👥"}, {"grade": 2, "kanji": "太", "read": "ふとい", "emoji": "🪵"}, {"grade": 2, "kanji": "体", "read": "からだ", "emoji": "🧍"}, {"grade": 2, "kanji": "台", "read": "だい", "emoji": "🪜"}, {"grade": 2, "kanji": "地", "read": "ち", "emoji": "🌍"}, {"grade": 2, "kanji": "池", "read": "いけ", "emoji": "🏞️"}, {"grade": 2, "kanji": "知", "read": "しる", "emoji": "💡"}, {"grade": 2, "kanji": "茶", "read": "ちゃ", "emoji": "🍵"}, {"grade": 2, "kanji": "昼", "read": "ひる", "emoji": "☀️"}, {"grade": 2, "kanji": "長", "read": "ながい", "emoji": "📏"}, {"grade": 2, "kanji": "鳥", "read": "とり", "emoji": "🐦"}, {"grade": 2, "kanji": "朝", "read": "あさ", "emoji": "🌅"}, {"grade": 2, "kanji": "直", "read": "なおす", "emoji": "🔧"}, {"grade": 2, "kanji": "通", "read": "とおる", "emoji": "🚶"}, {"grade": 2, "kanji": "弟", "read": "おとうと", "emoji": "👦"}, {"grade": 2, "kanji": "店", "read": "みせ", "emoji": "🏪"}, {"grade": 2, "kanji": "点", "read": "てん", "emoji": "📍"}, {"grade": 2, "kanji": "電", "read": "でんき", "emoji": "⚡"}, {"grade": 2, "kanji": "冬", "read": "ふゆ", "emoji": "❄️"}, {"grade": 2, "kanji": "当", "read": "あたる", "emoji": "🎯"}, {"grade": 2, "kanji": "東", "read": "ひがし", "emoji": "🧭"}, {"grade": 2, "kanji": "答", "read": "こたえ", "emoji": "✅"}, {"grade": 2, "kanji": "頭", "read": "あたま", "emoji": "🧑"}, {"grade": 2, "kanji": "同", "read": "おなじ", "emoji": "👯"}, {"grade": 2, "kanji": "道", "read": "みち", "emoji": "🛣️"}, {"grade": 2, "kanji": "読", "read": "よむ", "emoji": "📖"}, {"grade": 2, "kanji": "内", "read": "うち", "emoji": "🏠"}, {"grade": 2, "kanji": "南", "read": "みなみ", "emoji": "🧭"}, {"grade": 2, "kanji": "肉", "read": "にく", "emoji": "🥩"}, {"grade": 2, "kanji": "馬", "read": "うま", "emoji": "🐎"}, {"grade": 2, "kanji": "売", "read": "うる", "emoji": "🛒"}, {"grade": 2, "kanji": "買", "read": "かう", "emoji": "🛍️"}, {"grade": 2, "kanji": "麦", "read": "むぎ", "emoji": "🌾"}, {"grade": 2, "kanji": "半", "read": "はん", "emoji": "🌓"}, {"grade": 2, "kanji": "番", "read": "ばん", "emoji": "🔢"}, {"grade": 2, "kanji": "父", "read": "ちち", "emoji": "👨"}, {"grade": 2, "kanji": "風", "read": "かぜ", "emoji": "🍃"}, {"grade": 2, "kanji": "分", "read": "わける", "emoji": "🍕"}, {"grade": 2, "kanji": "聞", "read": "きく", "emoji": "👂"}, {"grade": 2, "kanji": "米", "read": "こめ", "emoji": "🌾"}, {"grade": 2, "kanji": "歩", "read": "あるく", "emoji": "🚶"}, {"grade": 2, "kanji": "母", "read": "はは", "emoji": "👩"}, {"grade": 2, "kanji": "北", "read": "きた", "emoji": "🧭"}, {"grade": 2, "kanji": "毎", "read": "まい", "emoji": "🔄"}, {"grade": 2, "kanji": "妹", "read": "いもうと", "emoji": "👧"}, {"grade": 2, "kanji": "明", "read": "あかるい", "emoji": "💡"}, {"grade": 2, "kanji": "門", "read": "もん", "emoji": "🚪"}, {"grade": 2, "kanji": "夜", "read": "よる", "emoji": "🌃"}, {"grade": 2, "kanji": "野", "read": "の", "emoji": "🌾"}, {"grade": 2, "kanji": "友", "read": "ともだち", "emoji": "🤝"}, {"grade": 2, "kanji": "用", "read": "よう", "emoji": "📋"}, {"grade": 2, "kanji": "曜", "read": "ようび", "emoji": "📅"}, {"grade": 2, "kanji": "来", "read": "くる", "emoji": "🏃"}, {"grade": 2, "kanji": "里", "read": "さと", "emoji": "🏡"}, {"grade": 2, "kanji": "理", "read": "り", "emoji": "🧪"}, {"grade": 2, "kanji": "話", "read": "はなす", "emoji": "💬"}, {"grade": 2, "kanji": "万", "read": "まん", "emoji": "🔟"}, {"grade": 2, "kanji": "公園", "read": "こうえん", "emoji": "🛝"}, {"grade": 2, "kanji": "電車", "read": "でんしゃ", "emoji": "🚃"}], "3": [{"grade": 3, "kanji": "悪", "read": "わるい", "emoji": "😈"}, {"grade": 3, "kanji": "安", "read": "やすい", "emoji": "🏷️"}, {"grade": 3, "kanji": "暗", "read": "くらい", "emoji": "🌃"}, {"grade": 3, "kanji": "医", "read": "いしゃ", "emoji": "🩺"}, {"grade": 3, "kanji": "委", "read": "いいん", "emoji": "📋"}, {"grade": 3, "kanji": "意", "read": "い", "emoji": "💭"}, {"grade": 3, "kanji": "育", "read": "そだてる", "emoji": "🌱"}, {"grade": 3, "kanji": "員", "read": "いん", "emoji": "🧑‍💼"}, {"grade": 3, "kanji": "院", "read": "いん", "emoji": "🏥"}, {"grade": 3, "kanji": "飲", "read": "のむ", "emoji": "🥤"}, {"grade": 3, "kanji": "運", "read": "はこぶ", "emoji": "🚚"}, {"grade": 3, "kanji": "泳", "read": "およぐ", "emoji": "🏊"}, {"grade": 3, "kanji": "駅", "read": "えき", "emoji": "🚉"}, {"grade": 3, "kanji": "央", "read": "おう", "emoji": "🎯"}, {"grade": 3, "kanji": "横", "read": "よこ", "emoji": "↔️"}, {"grade": 3, "kanji": "屋", "read": "や", "emoji": "🏠"}, {"grade": 3, "kanji": "温", "read": "あたたかい", "emoji": "♨️"}, {"grade": 3, "kanji": "化", "read": "ばける", "emoji": "🔄"}, {"grade": 3, "kanji": "荷", "read": "にもつ", "emoji": "📦"}, {"grade": 3, "kanji": "界", "read": "かい", "emoji": "🌎"}, {"grade": 3, "kanji": "開", "read": "あける", "emoji": "🔓"}, {"grade": 3, "kanji": "階", "read": "かい", "emoji": "🪜"}, {"grade": 3, "kanji": "寒", "read": "さむい", "emoji": "🥶"}, {"grade": 3, "kanji": "感", "read": "かんじる", "emoji": "❤️"}, {"grade": 3, "kanji": "漢", "read": "かん", "emoji": "🀄"}, {"grade": 3, "kanji": "館", "read": "かん", "emoji": "🏢"}, {"grade": 3, "kanji": "岸", "read": "きし", "emoji": "🏖️"}, {"grade": 3, "kanji": "起", "read": "おきる", "emoji": "⏰"}, {"grade": 3, "kanji": "期", "read": "き", "emoji": "📅"}, {"grade": 3, "kanji": "客", "read": "きゃく", "emoji": "👤"}, {"grade": 3, "kanji": "究", "read": "きわめる", "emoji": "🔬"}, {"grade": 3, "kanji": "急", "read": "いそぐ", "emoji": "🏃💨"}, {"grade": 3, "kanji": "級", "read": "きゅう", "emoji": "🏅"}, {"grade": 3, "kanji": "宮", "read": "みや", "emoji": "⛩️"}, {"grade": 3, "kanji": "球", "read": "たま", "emoji": "⚽"}, {"grade": 3, "kanji": "去", "read": "さる", "emoji": "🚶"}, {"grade": 3, "kanji": "橋", "read": "はし", "emoji": "🌉"}, {"grade": 3, "kanji": "業", "read": "ぎょう", "emoji": "💼"}, {"grade": 3, "kanji": "曲", "read": "きょく", "emoji": "🎵"}, {"grade": 3, "kanji": "局", "read": "きょく", "emoji": "🏢"}, {"grade": 3, "kanji": "銀", "read": "ぎん", "emoji": "🥈"}, {"grade": 3, "kanji": "区", "read": "く", "emoji": "🗺️"}, {"grade": 3, "kanji": "苦", "read": "くるしい", "emoji": "😫"}, {"grade": 3, "kanji": "具", "read": "ぐ", "emoji": "🛠️"}, {"grade": 3, "kanji": "君", "read": "きみ", "emoji": "🧑"}, {"grade": 3, "kanji": "係", "read": "かかり", "emoji": "👤"}, {"grade": 3, "kanji": "軽", "read": "かるい", "emoji": "🪶"}, {"grade": 3, "kanji": "血", "read": "ち", "emoji": "🩸"}, {"grade": 3, "kanji": "決", "read": "きめる", "emoji": "✅"}, {"grade": 3, "kanji": "研", "read": "けん", "emoji": "🔬"}, {"grade": 3, "kanji": "県", "read": "けん", "emoji": "🗾"}, {"grade": 3, "kanji": "庫", "read": "こ", "emoji": "📦"}, {"grade": 3, "kanji": "湖", "read": "みずうみ", "emoji": "🏞️"}, {"grade": 3, "kanji": "向", "read": "むく", "emoji": "➡️"}, {"grade": 3, "kanji": "幸", "read": "しあわせ", "emoji": "🍀"}, {"grade": 3, "kanji": "港", "read": "みなと", "emoji": "⚓"}, {"grade": 3, "kanji": "号", "read": "ごう", "emoji": "📢"}, {"grade": 3, "kanji": "根", "read": "ね", "emoji": "🌱"}, {"grade": 3, "kanji": "祭", "read": "まつり", "emoji": "🏮"}, {"grade": 3, "kanji": "皿", "read": "さら", "emoji": "🍽️"}, {"grade": 3, "kanji": "仕", "read": "つかえる", "emoji": "👔"}, {"grade": 3, "kanji": "死", "read": "しぬ", "emoji": "☠️"}, {"grade": 3, "kanji": "使", "read": "つかう", "emoji": "🛠️"}, {"grade": 3, "kanji": "始", "read": "はじめる", "emoji": "▶️"}, {"grade": 3, "kanji": "指", "read": "ゆび", "emoji": "👉"}, {"grade": 3, "kanji": "歯", "read": "は", "emoji": "🦷"}, {"grade": 3, "kanji": "詩", "read": "し", "emoji": "📜"}, {"grade": 3, "kanji": "次", "read": "つぎ", "emoji": "➡️"}, {"grade": 3, "kanji": "事", "read": "こと", "emoji": "📋"}, {"grade": 3, "kanji": "持", "read": "もつ", "emoji": "🎒"}, {"grade": 3, "kanji": "式", "read": "しき", "emoji": "📐"}, {"grade": 3, "kanji": "実", "read": "みのる", "emoji": "🍎"}, {"grade": 3, "kanji": "写", "read": "うつす", "emoji": "📸"}, {"grade": 3, "kanji": "者", "read": "しゃ", "emoji": "🧑"}, {"grade": 3, "kanji": "主", "read": "ぬし", "emoji": "👑"}, {"grade": 3, "kanji": "守", "read": "まもる", "emoji": "🛡️"}, {"grade": 3, "kanji": "取", "read": "とる", "emoji": "📥"}, {"grade": 3, "kanji": "酒", "read": "さけ", "emoji": "🍶"}, {"grade": 3, "kanji": "受", "read": "うける", "emoji": "📥"}, {"grade": 3, "kanji": "州", "read": "しゅう", "emoji": "🗺️"}, {"grade": 3, "kanji": "拾", "read": "ひろう", "emoji": "🧹"}, {"grade": 3, "kanji": "終", "read": "おわる", "emoji": "🏁"}, {"grade": 3, "kanji": "習", "read": "ならう", "emoji": "✏️"}, {"grade": 3, "kanji": "集", "read": "あつまる", "emoji": "👥"}, {"grade": 3, "kanji": "住", "read": "すむ", "emoji": "🏠"}, {"grade": 3, "kanji": "重", "read": "おもい", "emoji": "🏋️"}, {"grade": 3, "kanji": "宿", "read": "やど", "emoji": "🏨"}, {"grade": 3, "kanji": "所", "read": "ところ", "emoji": "📍"}, {"grade": 3, "kanji": "暑", "read": "あつい", "emoji": "🥵"}, {"grade": 3, "kanji": "助", "read": "たすける", "emoji": "🤝"}, {"grade": 3, "kanji": "昭", "read": "しょう", "emoji": "📅"}, {"grade": 3, "kanji": "消", "read": "きえる", "emoji": "🕯️"}, {"grade": 3, "kanji": "商", "read": "あきなう", "emoji": "🏪"}, {"grade": 3, "kanji": "章", "read": "しょう", "emoji": "📖"}, {"grade": 3, "kanji": "勝", "read": "かつ", "emoji": "🏆"}, {"grade": 3, "kanji": "乗", "read": "のる", "emoji": "🚲"}, {"grade": 3, "kanji": "植", "read": "うえる", "emoji": "🌱"}, {"grade": 3, "kanji": "申", "read": "もうす", "emoji": "🗣️"}, {"grade": 3, "kanji": "身", "read": "み", "emoji": "🧍"}, {"grade": 3, "kanji": "神", "read": "かみ", "emoji": "⛩️"}, {"grade": 3, "kanji": "真", "read": "まこと", "emoji": "✨"}, {"grade": 3, "kanji": "深", "read": "ふかい", "emoji": "🌊"}, {"grade": 3, "kanji": "進", "read": "すすむ", "emoji": "➡️"}, {"grade": 3, "kanji": "世", "read": "よ", "emoji": "🌍"}, {"grade": 3, "kanji": "整", "read": "ととのえる", "emoji": "🧹"}, {"grade": 3, "kanji": "昔", "read": "むかし", "emoji": "⏳"}, {"grade": 3, "kanji": "全", "read": "ぜんぶ", "emoji": "📦"}, {"grade": 3, "kanji": "相", "read": "あいて", "emoji": "🤝"}, {"grade": 3, "kanji": "送", "read": "おくる", "emoji": "✉️"}, {"grade": 3, "kanji": "想", "read": "おもう", "emoji": "💭"}, {"grade": 3, "kanji": "息", "read": "いき", "emoji": "🌬️"}, {"grade": 3, "kanji": "速", "read": "はやい", "emoji": "⚡"}, {"grade": 3, "kanji": "族", "read": "ぞく", "emoji": "👪"}, {"grade": 3, "kanji": "他", "read": "ほか", "emoji": "👤"}, {"grade": 3, "kanji": "打", "read": "うつ", "emoji": "🔨"}, {"grade": 3, "kanji": "対", "read": "たい", "emoji": "⚔️"}, {"grade": 3, "kanji": "待", "read": "まつ", "emoji": "⏳"}, {"grade": 3, "kanji": "代", "read": "かわる", "emoji": "🔄"}, {"grade": 3, "kanji": "第", "read": "だい", "emoji": "🔢"}, {"grade": 3, "kanji": "題", "read": "だい", "emoji": "📝"}, {"grade": 3, "kanji": "炭", "read": "すみ", "emoji": "🪵"}, {"grade": 3, "kanji": "短", "read": "みじかい", "emoji": "📏"}, {"grade": 3, "kanji": "談", "read": "だん", "emoji": "💬"}, {"grade": 3, "kanji": "値", "read": "ね", "emoji": "🏷️"}, {"grade": 3, "kanji": "帳", "read": "ちょう", "emoji": "📓"}, {"grade": 3, "kanji": "調", "read": "しらべる", "emoji": "🔍"}, {"grade": 3, "kanji": "追", "read": "おう", "emoji": "🏃"}, {"grade": 3, "kanji": "定", "read": "さだめる", "emoji": "📌"}, {"grade": 3, "kanji": "庭", "read": "にわ", "emoji": "🏡"}, {"grade": 3, "kanji": "鉄", "read": "てつ", "emoji": "🚂"}, {"grade": 3, "kanji": "転", "read": "ころがる", "emoji": "🔄"}, {"grade": 3, "kanji": "都", "read": "と", "emoji": "🏙️"}, {"grade": 3, "kanji": "度", "read": "ど", "emoji": "🌡️"}, {"grade": 3, "kanji": "投", "read": "なげる", "emoji": "⚾"}, {"grade": 3, "kanji": "等", "read": "ひとしい", "emoji": "⚖️"}, {"grade": 3, "kanji": "島", "read": "しま", "emoji": "🏝️"}, {"grade": 3, "kanji": "湯", "read": "ゆ", "emoji": "♨️"}, {"grade": 3, "kanji": "登", "read": "のぼる", "emoji": "🧗"}, {"grade": 3, "kanji": "動", "read": "うごく", "emoji": "🏃"}, {"grade": 3, "kanji": "童", "read": "わらべ", "emoji": "🧒"}, {"grade": 3, "kanji": "農", "read": "のう", "emoji": "🧑‍🌾"}, {"grade": 3, "kanji": "波", "read": "なみ", "emoji": "🌊"}, {"grade": 3, "kanji": "配", "read": "くばる", "emoji": "📦"}, {"grade": 3, "kanji": "倍", "read": "ばい", "emoji": "✖️"}, {"grade": 3, "kanji": "箱", "read": "はこ", "emoji": "📦"}, {"grade": 3, "kanji": "畑", "read": "はたけ", "emoji": "🚜"}, {"grade": 3, "kanji": "発", "read": "はつ", "emoji": "🚀"}, {"grade": 3, "kanji": "反", "read": "はん", "emoji": "🔄"}, {"grade": 3, "kanji": "坂", "read": "さか", "emoji": "📈"}, {"grade": 3, "kanji": "板", "read": "いた", "emoji": "🪵"}, {"grade": 3, "kanji": "皮", "read": "かわ", "emoji": "🍊"}, {"grade": 3, "kanji": "悲", "read": "かなしい", "emoji": "😢"}, {"grade": 3, "kanji": "美", "read": "うつくしい", "emoji": "✨"}, {"grade": 3, "kanji": "鼻", "read": "はな", "emoji": "👃"}, {"grade": 3, "kanji": "筆", "read": "ふで", "emoji": "🖌️"}, {"grade": 3, "kanji": "氷", "read": "こおり", "emoji": "🧊"}, {"grade": 3, "kanji": "表", "read": "おもて", "emoji": "📊"}, {"grade": 3, "kanji": "病", "read": "やまい", "emoji": "🤒"}, {"grade": 3, "kanji": "秒", "read": "びょう", "emoji": "⏱️"}, {"grade": 3, "kanji": "品", "read": "しな", "emoji": "📦"}, {"grade": 3, "kanji": "負", "read": "まける", "emoji": "😣"}, {"grade": 3, "kanji": "部", "read": "ぶ", "emoji": "🏢"}, {"grade": 3, "kanji": "服", "read": "ふく", "emoji": "👕"}, {"grade": 3, "kanji": "福", "read": "ふく", "emoji": "🍀"}, {"grade": 3, "kanji": "物", "read": "もの", "emoji": "📦"}, {"grade": 3, "kanji": "平", "read": "たいら", "emoji": "📏"}, {"grade": 3, "kanji": "返", "read": "かえす", "emoji": "↩️"}, {"grade": 3, "kanji": "勉", "read": "べん", "emoji": "✏️"}, {"grade": 3, "kanji": "放", "read": "はなす", "emoji": "📢"}, {"grade": 3, "kanji": "味", "read": "あじ", "emoji": "👅"}, {"grade": 3, "kanji": "命", "read": "いのち", "emoji": "🌱"}, {"grade": 3, "kanji": "面", "read": "めん", "emoji": "😀"}, {"grade": 3, "kanji": "問", "read": "とい", "emoji": "❓"}, {"grade": 3, "kanji": "役", "read": "やく", "emoji": "🎭"}, {"grade": 3, "kanji": "薬", "read": "くすり", "emoji": "💊"}, {"grade": 3, "kanji": "由", "read": "よし", "emoji": "📖"}, {"grade": 3, "kanji": "油", "read": "あぶら", "emoji": "🛢️"}, {"grade": 3, "kanji": "有", "read": "ある", "emoji": "✅"}, {"grade": 3, "kanji": "遊", "read": "あそぶ", "emoji": "🛝"}, {"grade": 3, "kanji": "予", "read": "あらかじめ", "emoji": "📅"}, {"grade": 3, "kanji": "羊", "read": "ひつじ", "emoji": "🐑"}, {"grade": 3, "kanji": "洋", "read": "よう", "emoji": "🌊"}, {"grade": 3, "kanji": "葉", "read": "は", "emoji": "🍃"}, {"grade": 3, "kanji": "陽", "read": "よう", "emoji": "☀️"}, {"grade": 3, "kanji": "様", "read": "さま", "emoji": "👤"}, {"grade": 3, "kanji": "落", "read": "おちる", "emoji": "🍂"}, {"grade": 3, "kanji": "流", "read": "ながれる", "emoji": "🌊"}, {"grade": 3, "kanji": "旅", "read": "たび", "emoji": "🧳"}, {"grade": 3, "kanji": "両", "read": "りょう", "emoji": "⚖️"}, {"grade": 3, "kanji": "緑", "read": "みどり", "emoji": "🟢"}, {"grade": 3, "kanji": "礼", "read": "れい", "emoji": "🙇"}, {"grade": 3, "kanji": "列", "read": "れつ", "emoji": "🚶"}, {"grade": 3, "kanji": "練", "read": "れん", "emoji": "🏃"}, {"grade": 3, "kanji": "路", "read": "みち", "emoji": "🛣️"}, {"grade": 3, "kanji": "和", "read": "わ", "emoji": "🤝"}], "4": [{"grade": 4, "kanji": "愛", "read": "あい", "emoji": "❤️"}, {"grade": 4, "kanji": "案", "read": "あん", "emoji": "💡"}, {"grade": 4, "kanji": "以", "read": "い", "emoji": "➡️"}, {"grade": 4, "kanji": "衣", "read": "ころも", "emoji": "👘"}, {"grade": 4, "kanji": "位", "read": "くらい", "emoji": "🥇"}, {"grade": 4, "kanji": "囲", "read": "かこむ", "emoji": "🔄"}, {"grade": 4, "kanji": "胃", "read": "い", "emoji": "🍽️"}, {"grade": 4, "kanji": "印", "read": "いん", "emoji": "📍"}, {"grade": 4, "kanji": "英", "read": "えい", "emoji": "🇬🇧"}, {"grade": 4, "kanji": "栄", "read": "さかえる", "emoji": "👑"}, {"grade": 4, "kanji": "塩", "read": "しお", "emoji": "🧂"}, {"grade": 4, "kanji": "億", "read": "おく", "emoji": "💰"}, {"grade": 4, "kanji": "加", "read": "くわえる", "emoji": "➕"}, {"grade": 4, "kanji": "果", "read": "はたす", "emoji": "🍎"}, {"grade": 4, "kanji": "貨", "read": "か", "emoji": "🪙"}, {"grade": 4, "kanji": "課", "read": "か", "emoji": "📚"}, {"grade": 4, "kanji": "芽", "read": "め", "emoji": "🌱"}, {"grade": 4, "kanji": "改", "read": "あらためる", "emoji": "🔧"}, {"grade": 4, "kanji": "械", "read": "かい", "emoji": "⚙️"}, {"grade": 4, "kanji": "害", "read": "がい", "emoji": "⚠️"}, {"grade": 4, "kanji": "街", "read": "まち", "emoji": "🏙️"}, {"grade": 4, "kanji": "各", "read": "かく", "emoji": "👥"}, {"grade": 4, "kanji": "覚", "read": "おぼえる", "emoji": "🧠"}, {"grade": 4, "kanji": "完", "read": "かん", "emoji": "✅"}, {"grade": 4, "kanji": "官", "read": "かん", "emoji": "🏛️"}, {"grade": 4, "kanji": "管", "read": "くだ", "emoji": "🧪"}, {"grade": 4, "kanji": "関", "read": "せき", "emoji": "🚪"}, {"grade": 4, "kanji": "観", "read": "みる", "emoji": "🔭"}, {"grade": 4, "kanji": "願", "read": "ねがう", "emoji": "🙏"}, {"grade": 4, "kanji": "希", "read": "のぞむ", "emoji": "✨"}, {"grade": 4, "kanji": "季", "read": "き", "emoji": "📅"}, {"grade": 4, "kanji": "紀", "read": "き", "emoji": "⏳"}, {"grade": 4, "kanji": "喜", "read": "よろこぶ", "emoji": "🥳"}, {"grade": 4, "kanji": "旗", "read": "はた", "emoji": "🚩"}, {"grade": 4, "kanji": "器", "read": "うつわ", "emoji": "🍽️"}, {"grade": 4, "kanji": "機", "read": "き", "emoji": "⚙️"}, {"grade": 4, "kanji": "議", "read": "ぎ", "emoji": "🗣️"}, {"grade": 4, "kanji": "求", "read": "もとめる", "emoji": "🔍"}, {"grade": 4, "kanji": "泣", "read": "なく", "emoji": "😭"}, {"grade": 4, "kanji": "救", "read": "すくう", "emoji": "🚑"}, {"grade": 4, "kanji": "給", "read": "きゅう", "emoji": "💴"}, {"grade": 4, "kanji": "挙", "read": "あげる", "emoji": "🙋"}, {"grade": 4, "kanji": "漁", "read": "りょう", "emoji": "🎣"}, {"grade": 4, "kanji": "共", "read": "とも", "emoji": "👥"}, {"grade": 4, "kanji": "協", "read": "きょうりょく", "emoji": "🤝"}, {"grade": 4, "kanji": "鏡", "read": "かがみ", "emoji": "🪞"}, {"grade": 4, "kanji": "競", "read": "きそう", "emoji": "🏃"}, {"grade": 4, "kanji": "極", "read": "きわめる", "emoji": "🏔️"}, {"grade": 4, "kanji": "訓", "read": "おしえ", "emoji": "🏫"}, {"grade": 4, "kanji": "軍", "read": "ぐん", "emoji": "🪖"}, {"grade": 4, "kanji": "郡", "read": "ぐん", "emoji": "🗺️"}, {"grade": 4, "kanji": "径", "read": "みち", "emoji": "📏"}, {"grade": 4, "kanji": "型", "read": "かた", "emoji": "📐"}, {"grade": 4, "kanji": "景", "read": "けい", "emoji": "🏞️"}, {"grade": 4, "kanji": "芸", "read": "げい", "emoji": "🎨"}, {"grade": 4, "kanji": "欠", "read": "かける", "emoji": "❌"}, {"grade": 4, "kanji": "結", "read": "むすぶ", "emoji": "🎀"}, {"grade": 4, "kanji": "建", "read": "たてる", "emoji": "🏗️"}, {"grade": 4, "kanji": "健", "read": "すこやか", "emoji": "💪"}, {"grade": 4, "kanji": "験", "read": "ためす", "emoji": "📝"}, {"grade": 4, "kanji": "固", "read": "かたい", "emoji": "🧱"}, {"grade": 4, "kanji": "功", "read": "いさお", "emoji": "🏅"}, {"grade": 4, "kanji": "好", "read": "すき", "emoji": "❤️"}, {"grade": 4, "kanji": "候", "read": "こう", "emoji": "🌦️"}, {"grade": 4, "kanji": "航", "read": "こう", "emoji": "✈️"}, {"grade": 4, "kanji": "康", "read": "やすらか", "emoji": "🌱"}, {"grade": 4, "kanji": "告", "read": "つげる", "emoji": "📢"}, {"grade": 4, "kanji": "差", "read": "さ", "emoji": "➖"}, {"grade": 4, "kanji": "最", "read": "もっとも", "emoji": "🔝"}, {"grade": 4, "kanji": "菜", "read": "な", "emoji": "🥬"}, {"grade": 4, "kanji": "材", "read": "ざい", "emoji": "🪵"}, {"grade": 4, "kanji": "昨", "read": "きのう", "emoji": "📅"}, {"grade": 4, "kanji": "札", "read": "さつ", "emoji": "💴"}, {"grade": 4, "kanji": "刷", "read": "する", "emoji": "🖨️"}, {"grade": 4, "kanji": "察", "read": "さっする", "emoji": "🔍"}, {"grade": 4, "kanji": "参", "read": "まいる", "emoji": "🚶"}, {"grade": 4, "kanji": "産", "read": "うむ", "emoji": "👶"}, {"grade": 4, "kanji": "散", "read": "ちる", "emoji": "🍂"}, {"grade": 4, "kanji": "残", "read": "のこる", "emoji": "⏳"}, {"grade": 4, "kanji": "司", "read": "つかさどる", "emoji": "👨‍⚖️"}, {"grade": 4, "kanji": "史", "read": "ふみ", "emoji": "📜"}, {"grade": 4, "kanji": "姉", "read": "あね", "emoji": "👩"}, {"grade": 4, "kanji": "師", "read": "し", "emoji": "🧑‍🏫"}, {"grade": 4, "kanji": "試", "read": "ためす", "emoji": "📝"}, {"grade": 4, "kanji": "児", "read": "じ", "emoji": "👦"}, {"grade": 4, "kanji": "治", "read": "なおる", "emoji": "🩹"}, {"grade": 4, "kanji": "辞", "read": "やめる", "emoji": "📖"}, {"grade": 4, "kanji": "失", "read": "うしなう", "emoji": "❌"}, {"grade": 4, "kanji": "借", "read": "かりる", "emoji": "💳"}, {"grade": 4, "kanji": "種", "read": "たね", "emoji": "🌱"}, {"grade": 4, "kanji": "周", "read": "まわり", "emoji": "🔄"}, {"grade": 4, "kanji": "祝", "read": "いわう", "emoji": "🎉"}, {"grade": 4, "kanji": "順", "read": "じゅん", "emoji": "➡️"}, {"grade": 4, "kanji": "初", "read": "はじめ", "emoji": "🌅"}, {"grade": 4, "kanji": "松", "read": "まつ", "emoji": "🌲"}, {"grade": 4, "kanji": "笑", "read": "わらう", "emoji": "😄"}, {"grade": 4, "kanji": "唱", "read": "となえる", "emoji": "🎤"}, {"grade": 4, "kanji": "焼", "read": "やく", "emoji": "🔥"}, {"grade": 4, "kanji": "象", "read": "ぞう", "emoji": "🐘"}, {"grade": 4, "kanji": "照", "read": "てらす", "emoji": "🔦"}, {"grade": 4, "kanji": "賞", "read": "しょう", "emoji": "🏆"}, {"grade": 4, "kanji": "臣", "read": "おみ", "emoji": "👔"}, {"grade": 4, "kanji": "笑", "read": "わらう", "emoji": "😄"}, {"grade": 4, "kanji": "象", "read": "ぞう", "emoji": "🐘"}, {"grade": 4, "kanji": "賞", "read": "しょう", "emoji": "🏆"}, {"grade": 4, "kanji": "信", "read": "しんじる", "emoji": "🤝"}, {"grade": 4, "kanji": "臣", "read": "おみ", "emoji": "🧑‍💼"}, {"grade": 4, "kanji": "森", "read": "もり", "emoji": "🌲"}, {"grade": 4, "kanji": "成", "read": "なる", "emoji": "📈"}, {"grade": 4, "kanji": "清", "read": "きよい", "emoji": "💧"}, {"grade": 4, "kanji": "静", "read": "しずか", "emoji": "🤫"}, {"grade": 4, "kanji": "席", "read": "せき", "emoji": "🪑"}, {"grade": 4, "kanji": "積", "read": "つもる", "emoji": "❄️"}, {"grade": 4, "kanji": "折", "read": "おる", "emoji": "📄"}, {"grade": 4, "kanji": "節", "read": "せつ", "emoji": "🎋"}, {"grade": 4, "kanji": "説", "read": "とく", "emoji": "🗣️"}, {"grade": 4, "kanji": "浅", "read": "あさい", "emoji": "🌊"}, {"grade": 4, "kanji": "戦", "read": "たたかう", "emoji": "⚔️"}, {"grade": 4, "kanji": "選", "read": "えらぶ", "emoji": "🗳️"}, {"grade": 4, "kanji": "然", "read": "ぜん", "emoji": "🔥"}, {"grade": 4, "kanji": "争", "read": "あらそう", "emoji": "🤼"}, {"grade": 4, "kanji": "倉", "read": "くら", "emoji": "📦"}, {"grade": 4, "kanji": "巣", "read": "す", "emoji": "🪹"}, {"grade": 4, "kanji": "束", "read": "たばねる", "emoji": "💐"}, {"grade": 4, "kanji": "側", "read": "かわ", "emoji": "↔️"}, {"grade": 4, "kanji": "続", "read": "つづく", "emoji": "⏩"}, {"grade": 4, "kanji": "卒", "read": "そつぎょう", "emoji": "🎓"}, {"grade": 4, "kanji": "孫", "read": "まご", "emoji": "👶"}, {"grade": 4, "kanji": "帯", "read": "おび", "emoji": "🥋"}, {"grade": 4, "kanji": "隊", "read": "たい", "emoji": "👥"}, {"grade": 4, "kanji": "達", "read": "たち", "emoji": "👥"}, {"grade": 4, "kanji": "単", "read": "たん", "emoji": "1️⃣"}, {"grade": 4, "kanji": "置", "read": "おく", "emoji": "📥"}, {"grade": 4, "kanji": "仲", "read": "なかま", "emoji": "🤝"}, {"grade": 4, "kanji": "貯", "read": "たくわえる", "emoji": "🏦"}, {"grade": 4, "kanji": "兆", "read": "ちょう", "emoji": "🔟"}, {"grade": 4, "kanji": "腸", "read": "ちょう", "emoji": "🥩"}, {"grade": 4, "kanji": "低", "read": "ひくい", "emoji": "📉"}, {"grade": 4, "kanji": "底", "read": "そこ", "emoji": "📦"}, {"grade": 4, "kanji": "停", "read": "とまる", "emoji": "🛑"}, {"grade": 4, "kanji": "的", "read": "まと", "emoji": "🎯"}, {"grade": 4, "kanji": "典", "read": "てん", "emoji": "📚"}, {"grade": 4, "kanji": "伝", "read": "つたえる", "emoji": "📢"}, {"grade": 4, "kanji": "徒", "read": "と", "emoji": "🎒"}, {"grade": 4, "kanji": "努", "read": "つとめる", "emoji": "🏃"}, {"grade": 4, "kanji": "灯", "read": "ともしび", "emoji": "💡"}, {"grade": 4, "kanji": "堂", "read": "どう", "emoji": "🏛️"}, {"grade": 4, "kanji": "得", "read": "える", "emoji": "🎁"}, {"grade": 4, "kanji": "毒", "read": "どく", "emoji": "☠️"}, {"grade": 4, "kanji": "熱", "read": "ねつ", "emoji": "🌡️"}, {"grade": 4, "kanji": "念", "read": "ねん", "emoji": "💭"}, {"grade": 4, "kanji": "敗", "read": "やぶれる", "emoji": "😢"}, {"grade": 4, "kanji": "博", "read": "はく", "emoji": "📚"}, {"grade": 4, "kanji": "飯", "read": "めし", "emoji": "🍚"}, {"grade": 4, "kanji": "飛", "read": "とぶ", "emoji": "🕊️"}, {"grade": 4, "kanji": "費", "read": "ついやす", "emoji": "💴"}, {"grade": 4, "kanji": "必", "read": "かならず", "emoji": "✅"}, {"grade": 4, "kanji": "票", "read": "ひょう", "emoji": "🗳️"}, {"grade": 4, "kanji": "標", "read": "しるし", "emoji": "🚩"}, {"grade": 4, "kanji": "不", "read": "ふ", "emoji": "❌"}, {"grade": 4, "kanji": "夫", "read": "おっと", "emoji": "👨"}, {"grade": 4, "kanji": "付", "read": "つける", "emoji": "📎"}, {"grade": 4, "kanji": "府", "read": "ふ", "emoji": "🏛️"}, {"grade": 4, "kanji": "副", "read": "ふく", "emoji": "🤝"}, {"grade": 4, "kanji": "粉", "read": "こな", "emoji": "🥣"}, {"grade": 4, "kanji": "兵", "read": "へい", "emoji": "🪖"}, {"grade": 4, "kanji": "別", "read": "べつ", "emoji": "↔️"}, {"grade": 4, "kanji": "辺", "read": "あたり", "emoji": "🗺️"}, {"grade": 4, "kanji": "変", "read": "かわる", "emoji": "🔄"}, {"grade": 4, "kanji": "便", "read": "たより", "emoji": "📮"}, {"grade": 4, "kanji": "包", "read": "つつむ", "emoji": "📦"}, {"grade": 4, "kanji": "法", "read": "ほう", "emoji": "⚖️"}, {"grade": 4, "kanji": "望", "read": "のぞむ", "emoji": "🌟"}, {"grade": 4, "kanji": "牧", "read": "まき", "emoji": "🐄"}, {"grade": 4, "kanji": "末", "read": "すえ", "emoji": "🔚"}, {"grade": 4, "kanji": "満", "read": "みちる", "emoji": "🌕"}, {"grade": 4, "kanji": "脈", "read": "みゃく", "emoji": "❤️"}, {"grade": 4, "kanji": "民", "read": "たみ", "emoji": "👥"}, {"grade": 4, "kanji": "無", "read": "ない", "emoji": "🚫"}, {"grade": 4, "kanji": "約", "read": "やく", "emoji": "🤝"}, {"grade": 4, "kanji": "勇", "read": "ゆう", "emoji": "🦸"}, {"grade": 4, "kanji": "要", "read": "よう", "emoji": "📌"}, {"grade": 4, "kanji": "養", "read": "やしなう", "emoji": "🌱"}, {"grade": 4, "kanji": "浴", "read": "あびる", "emoji": "🛁"}, {"grade": 4, "kanji": "利", "read": "り", "emoji": "📈"}, {"grade": 4, "kanji": "陸", "read": "りく", "emoji": "🗺️"}, {"grade": 4, "kanji": "良", "read": "よい", "emoji": "👍"}, {"grade": 4, "kanji": "料", "read": "りょう", "emoji": "🧾"}, {"grade": 4, "kanji": "量", "read": "りょう", "emoji": "⚖️"}, {"grade": 4, "kanji": "輪", "read": "わ", "emoji": "⭕"}, {"grade": 4, "kanji": "類", "read": "るい", "emoji": "📂"}, {"grade": 4, "kanji": "令", "read": "れい", "emoji": "📢"}, {"grade": 4, "kanji": "冷", "read": "つめたい", "emoji": "🧊"}, {"grade": 4, "kanji": "例", "read": "れい", "emoji": "📖"}, {"grade": 4, "kanji": "歴", "read": "れきし", "emoji": "📜"}, {"grade": 4, "kanji": "連", "read": "つらなる", "emoji": "🔗"}, {"grade": 4, "kanji": "老", "read": "ろう", "emoji": "👴"}, {"grade": 4, "kanji": "労", "read": "ろう", "emoji": "🛠️"}, {"grade": 4, "kanji": "録", "read": "ろく", "emoji": "💾"}, {"grade": 4, "kanji": "飛行機", "read": "ひこうき", "emoji": "✈️"}, {"grade": 4, "kanji": "公園", "read": "こうえん", "emoji": "🛝"}]};
+const WD={"1": [{"word": "花火", "read": "はなび", "emoji": "🎆"}, {"word": "大人", "read": "おとな", "emoji": "🧑"}, {"word": "青空", "read": "あおぞら", "emoji": "🌤️"}, {"word": "山川", "read": "やまかわ", "emoji": "🏔️"}, {"word": "雨水", "read": "あまみず", "emoji": "🌧️"}, {"word": "金魚", "read": "きんぎょ", "emoji": "🐟"}, {"word": "土日", "read": "どにち", "emoji": "📅"}, {"word": "学校", "read": "がっこう", "emoji": "🏫"}, {"word": "先生", "read": "せんせい", "emoji": "👩‍🏫"}, {"word": "女王", "read": "じょおう", "emoji": "👑"}, {"word": "右手", "read": "みぎて", "emoji": "✋"}, {"word": "空気", "read": "くうき", "emoji": "💨"}, {"word": "月見", "read": "つきみ", "emoji": "🌕"}, {"word": "音楽", "read": "おんがく", "emoji": "🎵"}, {"word": "貝殻", "read": "かいがら", "emoji": "🐚"}, {"word": "千円", "read": "せんえん", "emoji": "💴"}, {"word": "白玉", "read": "しらたま", "emoji": "🍡"}, {"word": "赤玉", "read": "あかだま", "emoji": "🔴"}, {"word": "本屋", "read": "ほんや", "emoji": "📚"}, {"word": "王様", "read": "おうさま", "emoji": "🤴"}], "2": [{"word": "海水", "read": "かいすい", "emoji": "🌊"}, {"word": "図書館", "read": "としょかん", "emoji": "📚"}, {"word": "夏休み", "read": "なつやすみ", "emoji": "☀️"}, {"word": "家族", "read": "かぞく", "emoji": "👨‍👩‍👧"}, {"word": "歌声", "read": "うたごえ", "emoji": "🎤"}, {"word": "外国", "read": "がいこく", "emoji": "🌍"}, {"word": "楽器", "read": "がっき", "emoji": "🎸"}, {"word": "回転", "read": "かいてん", "emoji": "🔄"}, {"word": "会話", "read": "かいわ", "emoji": "💬"}, {"word": "科学", "read": "かがく", "emoji": "🔬"}, {"word": "汽車", "read": "きしゃ", "emoji": "🚂"}, {"word": "教室", "read": "きょうしつ", "emoji": "🏫"}, {"word": "工作", "read": "こうさく", "emoji": "✂️"}, {"word": "公園", "read": "こうえん", "emoji": "🌳"}, {"word": "交番", "read": "こうばん", "emoji": "👮"}, {"word": "広場", "read": "ひろば", "emoji": "🏟️"}, {"word": "牛乳", "read": "ぎゅうにゅう", "emoji": "🥛"}, {"word": "電車", "read": "でんしゃ", "emoji": "🚃"}, {"word": "親切", "read": "しんせつ", "emoji": "🤝"}, {"word": "思考", "read": "しこう", "emoji": "💭"}], "3": [{"word": "運動会", "read": "うんどうかい", "emoji": "🏃"}, {"word": "温泉", "read": "おんせん", "emoji": "♨️"}, {"word": "駅前", "read": "えきまえ", "emoji": "🚉"}, {"word": "映画", "read": "えいが", "emoji": "🎬"}, {"word": "化学", "read": "かがく", "emoji": "⚗️"}, {"word": "感想", "read": "かんそう", "emoji": "💭"}, {"word": "急行", "read": "きゅうこう", "emoji": "🚄"}, {"word": "銀行", "read": "ぎんこう", "emoji": "🏦"}, {"word": "苦手", "read": "にがて", "emoji": "😰"}, {"word": "計画", "read": "けいかく", "emoji": "📝"}, {"word": "研究", "read": "けんきゅう", "emoji": "🔬"}, {"word": "仕事", "read": "しごと", "emoji": "💼"}, {"word": "植物", "read": "しょくぶつ", "emoji": "🌿"}, {"word": "神社", "read": "じんじゃ", "emoji": "⛩️"}, {"word": "整理", "read": "せいり", "emoji": "🗂️"}, {"word": "速度", "read": "そくど", "emoji": "💨"}, {"word": "体育", "read": "たいいく", "emoji": "⚽"}, {"word": "注意", "read": "ちゅうい", "emoji": "⚠️"}, {"word": "図書室", "read": "としょしつ", "emoji": "📖"}, {"word": "放送", "read": "ほうそう", "emoji": "📺"}], "4": [{"word": "愛情", "read": "あいじょう", "emoji": "❤️"}, {"word": "案内", "read": "あんない", "emoji": "📍"}, {"word": "印刷", "read": "いんさつ", "emoji": "🖨️"}, {"word": "栄養", "read": "えいよう", "emoji": "🥗"}, {"word": "塩分", "read": "えんぶん", "emoji": "🧂"}, {"word": "改良", "read": "かいりょう", "emoji": "⬆️"}, {"word": "観察", "read": "かんさつ", "emoji": "🔍"}, {"word": "機械", "read": "きかい", "emoji": "⚙️"}, {"word": "競争", "read": "きょうそう", "emoji": "🏆"}, {"word": "芸術", "read": "げいじゅつ", "emoji": "🎨"}, {"word": "健康", "read": "けんこう", "emoji": "💪"}, {"word": "参加", "read": "さんか", "emoji": "🙋"}, {"word": "試合", "read": "しあい", "emoji": "⚽"}, {"word": "失敗", "read": "しっぱい", "emoji": "😅"}, {"word": "種類", "read": "しゅるい", "emoji": "📦"}, {"word": "順番", "read": "じゅんばん", "emoji": "🔢"}, {"word": "成功", "read": "せいこう", "emoji": "🎉"}, {"word": "説明", "read": "せつめい", "emoji": "📢"}, {"word": "世界", "read": "せかい", "emoji": "🌍"}, {"word": "伝統", "read": "でんとう", "emoji": "🎎"}]};
+
+const MSG = {
+  home: ['いっしょに　たのしく　まなぼう！','きょうも　がんばろうね！','かんじ　おぼえたら　すごいよ！'],
+  s1k:  ['よみかたを　おぼえよう！　ボタンを　おしてね！','まず　よく　みてみよう！','いっしょに　よもう！'],
+  s1w:  ['たんごを　よもう！　ボタンを　おしてね！','たんごの　よみかたを　おぼえよう！','いっしょに　よんでみよう！'],
+  s2:   ['おなじものを　みつけて！','どこに　あるかな？　よく　みよう！','さがしてみよう！'],
+  s3k:  ['ひらがなに　あう　かんじは　どれ？','えらんでみよう！','よく　かんがえてね！'],
+  s3w:  ['ひらがなに　あう　たんごは　どれ？','えらんでみよう！','よく　かんがえてね！'],
+  ok:   ['せいかい！　すごいね！🎉','やったね！　よくできた！','さすが！　かんぺき！✨','すごい！　よくわかってるね！'],
+  ng:   ['だいじょうぶ！　もういちど！','つぎは　できるよ！','いっしょに　がんばろう！'],
+};
+const rnd = a => a[Math.floor(Math.random() * a.length)];
+
+let G = {
+  mode: 'kanji',   // 'kanji' or 'word'
+  grade: 1, deck: [], idx: 0,
+  s2done: false, s3done: false,
+  totalQ: 0, totalOk: 0, wrongItems: [],
+  todayOk: 0, todayTot: 0,
+};
+
+// ---- SCREEN ----
+function show(id) {
+  const cur = document.querySelector('.screen.active');
+  const nxt = document.getElementById(id);
+  if (cur === nxt) return;
+  if (cur) { cur.classList.add('exit'); setTimeout(() => cur.classList.remove('active','exit'), 320); }
+  setTimeout(() => nxt.classList.add('active'), 10);
+}
+
+// ---- HOME ----
+function initHome() {
+  updateStats();
+  document.getElementById('h-msg').textContent = rnd(MSG.home);
+}
+function setMode(m) {
+  G.mode = m;
+  document.getElementById('btn-kanji').classList.toggle('active', m === 'kanji');
+  document.getElementById('btn-word').classList.toggle('active', m === 'word');
+}
+function selG(g) {
+  G.grade = g;
+  const src = G.mode === 'word' ? (WD[g] || []) : (KD[g] || []);
+  G.deck = [...src].sort(() => Math.random() - .5).slice(0, Math.min(src.length, 10));
+  G.idx = 0; G.totalQ = 0; G.totalOk = 0; G.wrongItems = [];
+  loadStep1(); show('s-step1');
+}
+function goHome() {
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  show('s-home'); initHome();
+}
+
+// ---- helpers ----
+function getItem(it) {
+  // normalise: word mode has .word, kanji mode has .kanji
+  return { display: it.word || it.kanji, read: it.read, emoji: it.emoji };
+}
+function getPool() {
+  return G.mode === 'word' ? (WD[G.grade] || []) : (KD[G.grade] || []);
+}
+
+// ---- STEP 1 ----
+function loadStep1() {
+  const it = G.deck[G.idx];
+  const { display, read, emoji } = getItem(it);
+  const el = document.getElementById('s1-word');
+  el.textContent = display;
+  document.getElementById('s1-emoji').textContent = emoji;
+  document.getElementById('s1-reading').textContent = '';
+  document.getElementById('s1-tag').textContent = G.mode === 'word' ? 'たんご' : 'かんじ';
+  document.getElementById('s1-msg').textContent = '「' + read + '」を　よもう！　ボタンを　おしてね！';
+  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  setTimeout(() => el.classList.remove('pop'), 400);
+  G.s2done = false; G.s3done = false;
+}
+function step1Speak() {
+  const it = G.deck[G.idx];
+  const { read } = getItem(it);
+  document.getElementById('s1-reading').textContent = read;
+  document.getElementById('s1-msg').textContent = '「' + read + '」　いっしょに　いってみよう！';
+  speak(read, 's1-spkbtn');
+}
+function goStep2() { loadStep2(); show('s-step2'); }
+function goStep1() { show('s-step1'); }
+
+// ---- STEP 2: find same in 6-grid ----
+function loadStep2() {
+  const it = G.deck[G.idx];
+  const { display, read, emoji } = getItem(it);
+  document.getElementById('s2-word').textContent = display;
+  document.getElementById('s2-emoji').textContent = emoji;
+  document.getElementById('s2-msg').textContent = rnd(MSG.s2);
+
+  const pool = getPool();
+  const dist = pool.filter(x => getItem(x).display !== display).sort(() => Math.random() - .5).slice(0, 5);
+  const items = [...dist, it].sort(() => Math.random() - .5);
+
+  const grid = document.getElementById('s2-grid');
+  grid.innerHTML = '';
+  items.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'wgrid-btn';
+    b.textContent = getItem(c).display;
+    b.onclick = () => step2Pick(b, c, it);
+    grid.appendChild(b);
+  });
+}
+function step2Speak() { speak(getItem(G.deck[G.idx]).read, 's2-spkbtn'); }
+function step2Pick(btn, chosen, correct) {
+  if (G.s2done) return;
+  document.querySelectorAll('#s2-grid .wgrid-btn').forEach(b => { b.disabled = true; b.onclick = null; });
+  const ok = getItem(chosen).display === getItem(correct).display;
+  G.s2done = true;
+  if (ok) {
+    btn.classList.add('correct');
+    document.querySelectorAll('#s2-grid .wgrid-btn').forEach(b => { if (b !== btn) b.classList.add('dim'); });
+    G.totalQ++; G.totalOk++; G.todayOk++; G.todayTot++;
+    saveSt(); showFB(true, correct, () => { loadStep3(); show('s-step3'); });
+  } else {
+    btn.classList.add('wrong');
+    G.totalQ++; G.todayTot++;
+    if (!G.wrongItems.some(w => getItem(w).display === getItem(correct).display)) G.wrongItems.push(correct);
+    addWrong(correct); saveSt();
+    showFB(false, correct, () => { loadStep3(); show('s-step3'); });
+  }
+}
+
+// ---- STEP 3: choose word/kanji from hiragana ----
+function loadStep3() {
+  const it = G.deck[G.idx];
+  const { display, read, emoji } = getItem(it);
+  document.getElementById('s3-emoji').textContent = emoji;
+  document.getElementById('s3-reading').textContent = read;
+  document.getElementById('s3-msg').textContent = '「' + read + '」に　あうのは　どれかな？';
+
+  const pool = getPool();
+  const dist = pool.filter(x => getItem(x).display !== display).sort(() => Math.random() - .5).slice(0, 3);
+  const items = [...dist, it].sort(() => Math.random() - .5);
+
+  const grid = document.getElementById('s3-grid');
+  grid.innerHTML = '';
+  items.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'wc-btn';
+    b.textContent = getItem(c).display;
+    b.onclick = () => step3Pick(b, c, it);
+    grid.appendChild(b);
+  });
+}
+function step3Speak() { speak(getItem(G.deck[G.idx]).read, 's3-spkbtn'); }
+function goStep2b() { loadStep2(); show('s-step2'); }
+function step3Pick(btn, chosen, correct) {
+  if (G.s3done) return;
+  document.querySelectorAll('#s3-grid .wc-btn').forEach(b => { b.disabled = true; b.onclick = null; });
+  const ok = getItem(chosen).display === getItem(correct).display;
+  G.s3done = true;
+  if (ok) {
+    btn.classList.add('correct');
+    G.totalQ++; G.totalOk++; G.todayOk++; G.todayTot++;
+    saveSt(); showFB(true, correct, afterStep3);
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('#s3-grid .wc-btn').forEach(b => { if (b.textContent === getItem(correct).display) b.classList.add('correct'); });
+    G.totalQ++; G.todayTot++;
+    if (!G.wrongItems.some(w => getItem(w).display === getItem(correct).display)) G.wrongItems.push(correct);
+    addWrong(correct); saveSt();
+    showFB(false, correct, afterStep3);
+  }
+}
+function afterStep3() {
+  G.idx++;
+  if (G.idx < G.deck.length) { loadStep1(); show('s-step1'); }
+  else showResult();
+}
+
+// ---- FEEDBACK ----
+function showFB(ok, item, cb) {
+  const { display, read } = getItem(item);
+  const fb = document.getElementById('fb');
+  document.getElementById('fb-ej').textContent = ok ? '🎉' : '😊';
+  const m = document.getElementById('fb-msg');
+  m.textContent = ok ? rnd(MSG.ok) : rnd(MSG.ng);
+  m.className = 'fb-msg ' + (ok ? 'ok' : 'ng');
+  document.getElementById('fb-rd').textContent = ok
+    ? '「' + display + '」→「' + read + '」せいかい！'
+    : '「' + display + '」→「' + read + '」だよ';
+  fb.style.display = 'flex';
+  speak(read);
+  setTimeout(() => { fb.style.display = 'none'; if (cb) cb(); }, 1500);
+}
+
+// ---- RESULT ----
+function showResult() {
+  const ok = G.totalOk, tot = G.totalQ, rt = tot ? Math.round(ok / tot * 100) : 0;
+  document.getElementById('r-score').textContent = ok;
+  document.getElementById('r-of').textContent = '/ ' + tot + 'もん';
+  document.getElementById('r-rate').textContent = 'せいとうりつ　' + rt + '%';
+  const t = rt === 100 ? 'かんぺき！🏆' : rt >= 80 ? 'すごい！🎉' : rt >= 60 ? 'がんばったね！' : 'チャレンジ！';
+  const msg = rt === 100 ? 'ぜんもん　せいかい！　さすが！' : rt >= 80 ? 'よくできました！　えらい！' : rt >= 60 ? 'もうすこし！　れんしゅうしよう！' : 'またいっしょに　れんしゅうしようね！';
+  document.getElementById('r-title').textContent = t;
+  document.getElementById('r-msg').textContent = msg;
+  if (G.wrongItems.length) {
+    document.getElementById('ww').style.display = 'block';
+    document.getElementById('wl').innerHTML = G.wrongItems.map(k => {
+      const { display, read } = getItem(k);
+      return '<div class="w-tag">' + display + '<small>' + read + '</small></div>';
+    }).join('');
+  } else document.getElementById('ww').style.display = 'none';
+  show('s-result');
+  if (rt >= 60) mkCft();
+  setTimeout(() => speak(rt >= 80 ? 'やったね！すごい！' : 'よくがんばりました！'), 500);
+}
+function again() {
+  const src = G.mode === 'word' ? (WD[G.grade] || []) : (KD[G.grade] || []);
+  G.deck = [...src].sort(() => Math.random() - .5).slice(0, Math.min(src.length, 10));
+  G.idx = 0; G.totalQ = 0; G.totalOk = 0; G.wrongItems = [];
+  loadStep1(); show('s-step1');
+}
+function mkCft() {
+  const w = document.getElementById('cft'); w.innerHTML = '';
+  const cs = ['#FFD700','#FF5C4D','#22CC88','#0077CC','#A78BFA','#FF9B8A'];
+  for (let i = 0; i < 55; i++) {
+    const d = document.createElement('div'); d.className = 'cp';
+    d.style.cssText = 'left:' + Math.random()*100 + '%;width:' + (8+Math.random()*12) + 'px;height:' + (8+Math.random()*12) + 'px;background:' + cs[~~(Math.random()*cs.length)] + ';animation-duration:' + (1.4+Math.random()*2) + 's;animation-delay:' + (Math.random()*.9) + 's';
+    w.appendChild(d);
+  }
+}
+
+// ---- SPEECH ----
+function speak(txt, btnId) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const btn = btnId ? document.getElementById(btnId) : null;
+  const u = new SpeechSynthesisUtterance(txt);
+  u.lang = 'ja-JP'; u.rate = 0.78; u.pitch = 1.1;
+  u.onstart = () => { if (btn) btn.classList.add('speaking'); };
+  u.onend = u.onerror = () => { if (btn) btn.classList.remove('speaking'); };
+  window.speechSynthesis.speak(u);
+}
+
+// ---- STATS ----
+function saveSt() {
+  const d = new Date().toISOString().split('T')[0];
+  const s = JSON.parse(localStorage.getItem('ks') || '{}');
+  s[d] = { ok: G.todayOk, tot: G.todayTot };
+  localStorage.setItem('ks', JSON.stringify(s));
+  updateStats();
+}
+function updateStats() {
+  const d = new Date().toISOString().split('T')[0];
+  const s = JSON.parse(localStorage.getItem('ks') || '{}');
+  const td = s[d] || { ok: 0, tot: 0 };
+  G.todayOk = td.ok; G.todayTot = td.tot;
+  document.getElementById('st-ok').textContent = td.ok;
+  document.getElementById('st-rt').textContent = td.tot ? Math.round(td.ok / td.tot * 100) + '%' : '－';
+  document.getElementById('st-wr').textContent = ldW().length;
+}
+function ldW() { return JSON.parse(localStorage.getItem('kw') || '[]'); }
+function addWrong(it) {
+  const l = ldW();
+  const key = getItem(it).display;
+  if (!l.some(x => getItem(x).display === key)) l.push(it);
+  localStorage.setItem('kw', JSON.stringify(l));
+}
+
+window.addEventListener('DOMContentLoaded', initHome);
+</script>
+</body>
+</html>
